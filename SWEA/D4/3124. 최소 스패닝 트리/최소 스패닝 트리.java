@@ -1,49 +1,30 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Solution {
-	static int V;
-	static int[] parents;
+	static boolean[] visited;
+	static int[] minEdge;
+	static PriorityQueue<Vertex> pq;
+	static Vertex[] adj;
 	
-	public static void make() {
-		parents = new int[V+1];
-		Arrays.fill(parents, -1);
-	}
-	
-	public static int findSet(int a) {
-		if(parents[a] < 0) return a;
-		return parents[a] = findSet(parents[a]);
-	}
-	
-	public static boolean union(int a, int b) {
-		int aRoot = findSet(a);
-		int bRoot = findSet(b);
-		if(aRoot == bRoot) return false;
-		
-		parents[aRoot] = bRoot;
-		return true;
-	}
-	
-	static class Edge implements Comparable<Edge>{
-		int start, end, weight;
-
-		public Edge(int start, int end, int weight) {
+	static class Vertex implements Comparable<Vertex>{
+		int no;
+		Vertex next;
+		int weight;
+		public Vertex(int no, Vertex next, int weight) {
 			super();
-			this.start = start;
-			this.end = end;
+			this.no = no;
+			this.next = next;
 			this.weight = weight;
 		}
 
 		@Override
-		public int compareTo(Edge o) {
+		public int compareTo(Vertex o) {
 			return Integer.compare(this.weight, o.weight);
 		}
-		
-		
-		
 	}
 	
 	public static void main(String[] args) throws IOException{
@@ -51,33 +32,54 @@ public class Solution {
 		int T = Integer.parseInt(br.readLine());
 		
 		for(int tc = 1; tc <= T; tc++) {
-			long answer = 0;
-			
 			StringTokenizer st = new StringTokenizer(br.readLine());
-			
-			V = Integer.parseInt(st.nextToken());
+			int V = Integer.parseInt(st.nextToken());
 			int E = Integer.parseInt(st.nextToken());
 			
-			make();
-			Edge[] edges = new Edge[E];
+			adj = new Vertex[V];
+			visited = new boolean[V];
+			
+			minEdge = new int[V];
+			pq = new PriorityQueue<>();
 			
 			for(int i = 0; i < E; i++) {
 				st = new StringTokenizer(br.readLine());
-				edges[i] = new Edge(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()));
+				int start = Integer.parseInt(st.nextToken())-1;
+				int end = Integer.parseInt(st.nextToken())-1;
+				int weight = Integer.parseInt(st.nextToken());
+				Vertex vertex = new Vertex(end, adj[start], weight);
+				adj[start] = vertex;
+				
+
+				vertex = new Vertex(start, adj[end], weight);
+				adj[end] = vertex;
+			}
+			for(int i = 0; i < V; i++) {
+				minEdge[i] = Integer.MAX_VALUE;
 			}
 			
-			Arrays.sort(edges);
-			
+			long answer = 0;
 			int cnt = 0;
-			for(Edge edge : edges) {
-				if(union(edge.start, edge.end)) {
-					answer += edge.weight;
-					if(++cnt == V-1) break;
+			minEdge[0] = 0;
+			pq.offer(new Vertex(0, null, minEdge[0]));
+			
+			while(!pq.isEmpty()) {
+				Vertex minVertex = pq.poll();
+				if(visited[minVertex.no]) continue;
+				
+				answer += minVertex.weight;
+				visited[minVertex.no] = true;
+				if(++cnt == V) break;
+				
+				for(Vertex vertex = adj[minVertex.no]; vertex != null; vertex = vertex.next) {
+					if(!visited[vertex.no] && minEdge[vertex.no] > vertex.weight) {
+						minEdge[vertex.no] = vertex.weight;
+						pq.offer(new Vertex(vertex.no, null, minEdge[vertex.no]));
+					}
 				}
 			}
 			
-			System.out.println("#" + tc + " " + answer);
+			System.out.println("#" + tc +" "+answer);
 		}
 	}
-
 }
