@@ -1,47 +1,27 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
 
 public class Solution {
-	static int N;
-	static int[] parents;
-	
-	public static void make() {
-		parents = new int[N];
-		Arrays.fill(parents, -1);
-	}
-	
-	public static int findSet(int a) {
-		if(parents[a] < 0) return a;
-		return parents[a] = findSet(parents[a]);
-	}
-	
-	public static boolean union(int a, int b) {
-		int aRoot = findSet(a);
-		int bRoot = findSet(b);
-		if(aRoot == bRoot) return false;
+	static class Vertex implements Comparable<Vertex> {
+		int no;
+		Vertex next;
+		long weight;
 		
-		parents[aRoot] = bRoot;
-		return true;
-	}
-	
-	static class Edge implements Comparable<Edge>{
-		int start, end;
-		double weight;
-
-		public Edge(int start, int end, double weight) {
+		public Vertex(int no, Vertex next, long weight) {
 			super();
-			this.start = start;
-			this.end = end;
+			this.no = no;
+			this.next = next;
 			this.weight = weight;
 		}
 
 		@Override
-		public int compareTo(Edge o) {
-			return Double.compare(this.weight, o.weight);
+		public int compareTo(Vertex o) {
+			return Long.compare(this.weight, o.weight);
 		}
+		
 		
 	}
 	
@@ -50,53 +30,72 @@ public class Solution {
 		int T = Integer.parseInt(br.readLine());
 		
 		for(int tc = 1; tc <= T; tc++) {
-			N = Integer.parseInt(br.readLine());
-			int E = N * (N-1) / 2;
+			int N = Integer.parseInt(br.readLine());
 			
-			long[] islandX = new long[N];
-			long[] islandY = new long[N];
+			Vertex[] adj = new Vertex[N];
+			long[] inputX = new long[N];
+			long[] inputY = new long[N];
 			
 			StringTokenizer st = new StringTokenizer(br.readLine());
 			for(int i = 0; i < N; i++) {
-				islandX[i] = Long.parseLong(st.nextToken());
+				inputX[i] = Long.parseLong(st.nextToken());
 			}
-			
 			st = new StringTokenizer(br.readLine());
-			for(int i = 0; i < N; i++) {
-				islandY[i] = Long.parseLong(st.nextToken());
+			for (int i = 0; i < N; i++) {
+				inputY[i] = Long.parseLong(st.nextToken());
 			}
+			// 세율
+			double E = Double.parseDouble(br.readLine());
 			
-			Edge[] edges = new Edge[E];
+			// 현재 상태에서 트리에서 가장 가까운 노드부터 나옴
+			PriorityQueue<Vertex> pq = new PriorityQueue<>();
+			// 트리에 포함되어 있는지 여부
+			boolean[] visited = new boolean[N];
+			// 각 노드까지의 최소 간선 비용
+			long[] minEdge = new long[N];
 			
-			int idx = 0;
+			
+			// 인접리스트에 거리 구해서 노드 추가, minEdge배열을 MAX_VALUE로 초기화
 			for(int i = 0; i < N; i++) {
 				for(int j = i+1; j < N; j++) {
-					long dx = islandX[i] - islandX[j];
-					long dy = islandY[i] - islandY[j];
-					double weight = (double)(dx * dx + dy * dy);
-					edges[idx++] = new Edge(i, j, weight);
+					long dx = inputX[i] - inputX[j];
+					long dy = inputY[i] - inputY[j];
+					long distance = dx*dx + dy*dy;
+					
+					Vertex vertex = new Vertex(j, adj[i], distance);
+					adj[i] = vertex;
+					
+					vertex = new Vertex(i, adj[j], distance);
+					adj[j] = vertex;
 				}
+				minEdge[i] = Long.MAX_VALUE;
 			}
 			
-			make();
-			Arrays.sort(edges);
-			
+			double answer = 0;
 			int cnt = 0;
-			double sum = 0;
-			for(Edge edge : edges) {
-				if(union(edge.start, edge.end)) {
-					sum += edge.weight;
-					if(cnt == N - 1) break;
+			minEdge[0] = 0;
+			pq.offer(new Vertex(0, null, minEdge[0]));
+			
+			while(!pq.isEmpty()) {
+				// 최소 거리의 노드를 확인
+				Vertex minVertex = pq.poll();
+				// 트리에 이미 있으면 다음으로
+				if(visited[minVertex.no]) continue;
+				
+				// 없으면 추가
+				answer += minVertex.weight * E;
+				visited[minVertex.no] = true;
+				if(++cnt == N) break;
+				
+				for(Vertex vertex = adj[minVertex.no]; vertex != null; vertex = vertex.next) {
+					if(!visited[vertex.no] && minEdge[vertex.no] > vertex.weight) {
+						minEdge[vertex.no] = vertex.weight;
+						pq.offer(new Vertex(vertex.no, null, minEdge[vertex.no]));
+					}
 				}
+				
 			}
-			
-			double ratio = Double.parseDouble(br.readLine());
-			
-			long answer = Math.round(ratio * sum);
-			
-			System.out.println("#" + tc + " " + answer);
-			
+			System.out.printf("#%d %d\n", tc, Math.round(answer));
 		}
 	}
-
 }
