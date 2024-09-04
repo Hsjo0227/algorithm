@@ -1,58 +1,36 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Solution {
-	static int[] prices, months;
-	static int answer;
 	public static void main(String[] args) throws IOException{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int T = Integer.parseInt(br.readLine());
+		
 		for(int tc = 1; tc <= T; tc++) {
-			
-			prices = new int[4];
 			StringTokenizer st = new StringTokenizer(br.readLine());
-			for(int i = 0; i < 4; i++) {
+			int[] prices = new int[4];
+			
+			for(int i = 0; i< 4; i++) {
 				prices[i] = Integer.parseInt(st.nextToken());
 			}
 			
-			months = new int[13];
-			int totalDay = 0;
+			int[] months = new int[13];
+			
 			st = new StringTokenizer(br.readLine());
 			for(int i = 1; i <= 12; i++) {
-				int num = Integer.parseInt(st.nextToken());
-				months[i] = num;
-				totalDay += num;
+				months[i] = Integer.parseInt(st.nextToken()) * prices[0];
 			}
-			// 1년 요금제
-			answer = prices[3];
 			
-			calculate(1, 0);
+			for(int i = 1; i <= 12; i++) {
+				// 1일권과 1달권 비교
+				months[i] = Math.min(prices[1], months[i]) + months[i-1];
+				if(i >= 3) {
+                    // 3달권 비교
+					months[i] = Math.min(months[i-3] + prices[2], months[i]);
+				}
+			}
 			
-			System.out.printf("#%d %d\n", tc, answer);
-			
+			System.out.printf("#%d %d\n",tc ,Math.min(months[12], prices[3]));
 		}
-	}
-	
-	public static void calculate(int start, int sum) {
-		if(start > 12) {
-			answer = Math.min(answer, sum);
-			return;
-		}
-		
-		if(sum >= answer) {
-			return;
-		}
-		
-		// 1일 요금제와 1달 요금제를 비교함
-		calculate(start+1, sum + Math.min(prices[0] * months[start], prices[1]));
-		
-		// 3달 요금제
-		if(start <= 10) {
-			calculate(start+3, sum+prices[2]);
-		}
-
-
 	}
 }
