@@ -1,33 +1,25 @@
-import java.io.*;
 import java.util.*;
-
+import java.io.*;
 public class Main {
-//	static int N, M;
-	static int[][] dp;
-	public static void main(String[] args) throws IOException{
+	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int T = Integer.parseInt(br.readLine());
-		dp = new int[31][31];
 		
-		for(int i = 0; i < 31; i++) {
-			dp[i][0] = 1;
-			dp[i][i] = 1;
-		}
-		
-		for(int tc = 1; tc <= T; tc++) {
+		for(int i = 0; i < T; i++) {
 			StringTokenizer st = new StringTokenizer(br.readLine());
-			int N = Integer.parseInt(st.nextToken());
-			int M = Integer.parseInt(st.nextToken());
+			long N = Long.parseLong(st.nextToken());
+			long M = Long.parseLong(st.nextToken());
+			//result는 연산값을 저장해줄 것인데 처음에 곱하기때문에 1로 선언해준다.
+			long result = 1;
 			
-			N = Math.min(N, M-N);
-			System.out.println(function(M, N));
+			//곱하고 나누기를 반복할때마다 처리해준다.
+			//나누기 처음 값은 1이지만 반복문은 j가 0부터 시작하기 때문에 +1을 해준다.
+			for(int j = 0; j < N; j++) {
+				result *= (M - j);
+				result /= (j + 1);
+			}
+			System.out.println(result);
 		}
-	
 	}
-	private static int function(int n, int r) {
-		if(dp[n][r]!=0) {
-			return dp[n][r];
-		}
-		return dp[n][r] = function(n-1,r-1) + function(n-1, r);
-	}
+
 }
