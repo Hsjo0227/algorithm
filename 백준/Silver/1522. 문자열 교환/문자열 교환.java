@@ -7,23 +7,26 @@ public class Main {
 		String input = br.readLine();
 		String str = input + input;
 		
-		int l = 0;
+		int aCount = 0;
 		for(int i = 0; i < input.length(); i++) {
-			if(input.charAt(i) == 'a') l++;
+			if(input.charAt(i) == 'a') aCount++;
 		}
 		
-		int cnt = 0;
+		int min = Integer.MAX_VALUE;
+		int diff = 0;
 		
-		for(int i = 0; i < l; i++) {
-			if(input.charAt(i) == 'b') cnt++;
+		for(int i = 0; i < aCount; i++) {
+			if(input.charAt(i) == 'b') diff++;
 		}
-		int min = cnt;
+		
+		min = diff;
 		
 		for(int i = 0; i < input.length(); i++) {
-			if(str.charAt(i) == 'b') cnt--;
-			if(str.charAt(i+l) == 'b') cnt++;
-			min = Integer.min(min, cnt);
+			if(str.charAt(i) == 'b') diff--;
+			if(str.charAt(i + aCount) == 'b') diff++;
+			min = Integer.min(min, diff);
 		}
+		
 		System.out.println(min);
 	}
 }
