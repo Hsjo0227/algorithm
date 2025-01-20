@@ -48,7 +48,7 @@ public class Main {
             }
             
             sb.append(tc++).append(". ").append(answer).append("\n");
-            N = Integer.parseInt(br.readLine().trim());
+            N = Integer.parseInt(br.readLine());
         }
         
         System.out.println(sb);
