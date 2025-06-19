@@ -1,124 +1,104 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-public class Main {
-	static int N, arr[][], start[], sec;
-	static int sharkSize = 2;
-	static int eatingCnt = 0;
-	static int[] dirR = new int[] {-1,0,1,0};
-	static int[] dirC = new int[] {0,-1,0,1};
-
-	public static class Fish implements Comparable<Fish>{
-		int r, c,size;
-
-		public Fish(int r, int c, int size) {
-			super();
-			this.size = size;
-			this.r = r;
-			this.c = c;
-		}
-
-		@Override
-		public int compareTo(Fish o) {
-			if(this.r == o.r) {
-				return this.c - o.c;
-			}
-			return this.r - o.r;
-		}
-	}
-	
-    public static void main(String[] args) throws IOException{
+class Main {
+    static final int[] dr = {-1, 0, 0, 1};
+    static final int[] dc = {0, -1, 1, 0};
+    
+    static int N, answer, exp;
+    static int[] shark;
+    static int[][] board;
+    
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-        arr = new int[N][N];
         
-        for(int i=0; i<N; i++) {
-        	StringTokenizer st = new StringTokenizer(br.readLine());
-        	for(int j=0; j<N; j++) {
-        		int num = Integer.parseInt(st.nextToken());
-        		arr[i][j] = num;
-        		if(num==9) {
-        			start = new int[] {i,j};
-        			arr[i][j] = 0;
-        		}
-        	}
-        }
-        //end input
+        board = new int[N][N];
         
-        while(true) {
-        	Fish shark = new Fish(start[0],start[1],sharkSize);
-        	int time = findNextFish(shark);
-        	if(time==0) break;
-        	
-        	Fish targetFish = checkChoice(shark, time);
-        	start[0] = targetFish.r;
-        	start[1] = targetFish.c;
-        	arr[targetFish.r][targetFish.c] = 0;
-        	eatingCnt++;
-        	if(eatingCnt==sharkSize) {
-        		sharkSize++;
-        		eatingCnt=0;
-        	}
-        	
-        	sec += time;
+        shark = new int[3];
+        for(int i = 0; i < N; i++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            for(int j = 0; j < N; j++) {
+                int num = Integer.parseInt(st.nextToken());
+                if(num == 9) {
+                    shark[0] = i;
+                    shark[1] = j;
+                    shark[2] = 2;
+                } else {
+                    board[i][j] = num;
+                }
+            }
         }
-        System.out.println(sec);
-    }//end main
-    
-    static public int findNextFish(Fish shark) {
-    	boolean[][] visited = new boolean[N][N];
-    	Queue<int[]> que = new LinkedList<>();
-    	que.offer(new int[] {shark.r,shark.c,0});
-    	visited[shark.r][shark.c] = true;
-    	
-    	while(!que.isEmpty()) {
-    		int[] now = que.poll();
-    		int nowR = now[0];
-    		int nowC = now[1];
-    		int nowTime = now[2];
-    		if(arr[nowR][nowC]>0 && arr[nowR][nowC]<shark.size) {
-    			return nowTime;
-    		}
-    		for(int d=0; d<4; d++) {
-    			int nr = dirR[d]+nowR;
-    			int nc = dirC[d]+nowC;
-    			if(nr<0 || nr>=N || nc<0 || nc>=N) continue;
-    			if(visited[nr][nc] || arr[nr][nc]>shark.size) continue;
-    			visited[nr][nc] = true;
-    			que.offer(new int[] {nr, nc, nowTime+1});
-    		}
-    	}//end while
-    	return 0;
+        
+        int dist = move(shark[0], shark[1]);
+        while(dist != 0) {
+            answer += dist;
+            dist = move(shark[0], shark[1]);
+        }
+        
+        System.out.println(answer);
+        
+        
     }
     
-    //가장 가까운 애들 중에 위쪽과 왼쪽에 있는 애를 고름
-    static public Fish checkChoice(Fish shark, int limit) {
-    	boolean[][] visited = new boolean[N][N];
-    	Queue<int[]> que = new LinkedList<>();
-    	que.offer(new int[] {shark.r,shark.c,0});
-    	visited[shark.r][shark.c] = true;
-    	
-    	List<Fish> fishList = new ArrayList<>();
-    	while(!que.isEmpty()) {
-    		int[] now = que.poll();
-    		int nowR = now[0];
-    		int nowC = now[1];
-    		int nowTime = now[2];
-    		
-    		if(nowTime>limit) continue; //거리를 넘으면 패스
-    		if(arr[nowR][nowC]>0 && arr[nowR][nowC]<shark.size) { //거리안에 있고, 상어보다 사이즈가 작으면 리스트에 추가
-    			fishList.add(new Fish(nowR, nowC, arr[nowR][nowC]));
-    		}
-    		for(int d=0; d<4; d++) {
-    			int nr = dirR[d]+nowR;
-    			int nc = dirC[d]+nowC;
-    			if(nr<0 || nr>=N || nc<0 || nc>=N) continue;
-    			if(visited[nr][nc] || arr[nr][nc]>shark.size) continue;
-    			visited[nr][nc] = true;
-    			que.offer(new int[] {nr, nc, nowTime+1});
-    		}
-    	}//end while
-    	Collections.sort(fishList);
-    	return fishList.get(0);
+    public static int move(int r, int c) {
+        Queue<int[]> queue = new ArrayDeque<>();
+        boolean[][] visited = new boolean[N][N];
+        
+        queue.offer(new int[] {r, c});
+        visited[r][c] = true;
+        
+        int depth = 0;
+        List<int[]> list = new ArrayList<>();
+        
+        while(!queue.isEmpty()) {
+            int size = queue.size();
+            while(size-- > 0) {
+                int[] pos = queue.poll();
+                r = pos[0];
+                c = pos[1];
+                
+                if(board[r][c] > 0 && board[r][c] < shark[2]) {
+                    list.add(new int[] {r, c});
+                }
+                
+                for(int i = 0; i < 4; i++) {
+                    int nr = r + dr[i];
+                    int nc = c + dc[i];
+                    
+                    if(nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+                    if(visited[nr][nc]) continue;
+                    if(board[nr][nc] > shark[2]) continue;
+                    
+                    queue.offer(new int[] {nr, nc});
+                    visited[nr][nc] = true;
+                }
+                
+            }
+            if(list.size() > 0) break;
+            depth++;
+        }
+        
+        if(list.size() == 0) return 0;
+        
+        list.sort((a, b) -> {
+            if(a[0] == b[0]) return Integer.compare(a[1], b[1]);
+            else return Integer.compare(a[0], b[0]);
+        });
+        int[] pos = list.get(0);
+        
+        shark[0] = pos[0];
+        shark[1] = pos[1];
+        exp++;
+        
+        if(exp == shark[2]) {
+            exp = 0;
+            shark[2]++;
+        }
+        
+        board[pos[0]][pos[1]] = 0;
+        
+        
+        return depth;
     }
 }
