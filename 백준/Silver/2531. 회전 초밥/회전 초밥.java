@@ -1,50 +1,62 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-public class Main {
-	static int N,M,count;
-	static long ans;
-    
-    public static void main(String[] args) throws IOException{
+class Main {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        int N = Integer.parseInt(st.nextToken()); //벨트 위의 초밥 수
-        int d = Integer.parseInt(st.nextToken()); //초밥의 가지 수
-        int k = Integer.parseInt(st.nextToken()); //연속해서 먹는 접시 수
-        int c = Integer.parseInt(st.nextToken()); //쿠폰 번호
         
-        Deque<Integer> belt = new LinkedList<>();
-        List<Integer> list = new LinkedList<>();
+        int N = Integer.parseInt(st.nextToken());
+        int D = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        int C = Integer.parseInt(st.nextToken());
         
-        for(int i=0; i<N; i++) {
-        	int num = Integer.parseInt(br.readLine());
-        	belt.offer(num);
-        	list.add(num);
+        int[] sushi = new int[N];
+        
+        for(int i = 0; i < N; i++) {
+            sushi[i] = Integer.parseInt(br.readLine());
         }
-        //end input
-        Set<Integer> set = new HashSet<>();
-        Deque<Integer> pick = new LinkedList<>();
-        for(int i=0; i<k; i++) {
-        	int num = belt.poll();
-        	pick.offer(num);
-        	belt.offer(num);
-        	if(num==c) continue;
-        	set.add(num);
+
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(C, 1);
+        
+        for(int i = 0; i < K; i++) {
+            Integer num =  map.get(sushi[i]);
+            
+            if(num == null) {
+                map.put(sushi[i], 1);
+            } else {
+                map.put(sushi[i], num+1);
+            }
         }
-        int cnt = set.size();
-        //초기값 설정
-       for(int i=0; i<N; i++) {
-    	   int num = belt.poll();
-    	   pick.offer(num);
-    	   belt.offer(num);
-    	   int del = pick.poll();
-    	   if(!pick.contains(del)) {
-    		   set.remove(del);
-    	   }
-    	   if(num==c) continue;
-    	   set.add(num);
-    	   cnt = Math.max(cnt, set.size());
-       }
-       System.out.println(cnt+1);
-    }//end main
+        
+        int left = 0;
+        int right = K - 1;
+        
+        int answer = map.size();
+        for(int i = 0; i < N; i++) {
+            right = (right + 1) % N;
+            
+            Integer num = map.get(sushi[right]);
+            
+            if(num == null) {
+                map.put(sushi[right], 1);
+            } else {
+                map.put(sushi[right], num+1);
+            }
+            
+            num = map.get(sushi[left]);
+
+            if(num == 1) {
+                map.remove(sushi[left]);
+            } else {
+                map.put(sushi[left], num-1);
+            }
+            
+            answer = Math.max(answer, map.size());
+            left++;
+        }
+        
+        System.out.println(answer);
+    }
 }
