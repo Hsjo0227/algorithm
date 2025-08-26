@@ -11,23 +11,20 @@ class Main {
         for(int tc = 1; tc <= T; tc++) {
             int N = Integer.parseInt(br.readLine());
             
-            int[][] arr = new int[N][2];
+            int[] arr = new int[N+1];
             
             for(int i = 0; i < N; i++) {
                 StringTokenizer st = new StringTokenizer(br.readLine());
-                arr[i][0] = Integer.parseInt(st.nextToken());
-                arr[i][1] = Integer.parseInt(st.nextToken());
-                
+                int idx = Integer.parseInt(st.nextToken());
+                arr[idx] = Integer.parseInt(st.nextToken());
             }
             
-            Arrays.sort(arr, Comparator.comparingInt(p -> p[0]));
-            
-            int min = arr[0][1];
+            int min = arr[1];
             int cnt = 1;
             
-            for(int i = 1; i < N; i++) {
-                if(min > arr[i][1]) {
-                    min = arr[i][1];
+            for(int i = 2; i <= N; i++) {
+                if(min > arr[i]) {
+                    min = arr[i];
                     cnt++;
                 }
             }
