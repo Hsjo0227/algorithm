@@ -1,27 +1,11 @@
-import java.util.*;
-
 class Solution {
-    public static boolean check(int[] diffs, int[] times, long limit, int level) {
-        long total = 0;
-        for(int i = 0; i < diffs.length; i++) {
-            if(diffs[i] <= level){
-                total += times[i];
-            } else {
-                total += (long) (diffs[i]-level) * (times[i]+times[i-1]) + times[i];
-            }
-            
-            if(total > limit) return false;
-        }
-        return true;
-    }
-    
     public int solution(int[] diffs, int[] times, long limit) {
         int answer = 0;
         
         int left = 1;
         int right = 0;
         for(int num : diffs) {
-            right = Math.max(right, num);
+           right = Math.max(right, num);
         }
         
         answer = right;
@@ -36,7 +20,20 @@ class Solution {
             }
         }
         
-        
         return answer;
     }
+    
+    public static boolean check(int[] diffs, int[] times, long limit, int level) {
+        long total = 0;
+        for(int i = 0; i < diffs.length; i++) {
+            if(diffs[i] <= level) {
+                total += times[i];
+            } else {
+                total += (long) (diffs[i]-level) * (times[i] + times[i-1]) + times[i];
+            }
+            if(total > limit) return false;
+        }
+        return true;
+    }
+    
 }
