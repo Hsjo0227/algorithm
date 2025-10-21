@@ -1,52 +1,66 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
-public class Main { 
-	static int ans = Integer.MAX_VALUE , arr[][];
-	static int[] dirR = new int[]{0,1,0,-1};
-	static int[] dirC = new int[]{1,0,-1,0};
-    public static void main(String[] args) throws IOException{
+class Main {
+    final static int[] dr = {-1, 1, 0, 0};
+    final static int[] dc = {0, 0, -1, 1};
+    
+    static int[][] board;
+    static boolean[][] visited;
+    static int answer = Integer.MAX_VALUE;
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
-        arr = new int[5][5];
-        for(int i=0; i<5; i++) {
-        	st = new StringTokenizer(br.readLine());
-        	for(int j=0; j<5; j++) {
-        		arr[i][j] = Integer.parseInt(st.nextToken());
-        	}
+        
+        board = new int[5][5];
+        visited = new boolean[5][5];
+        
+        
+        for(int i = 0; i < 5; i++) {
+            st = new StringTokenizer(br.readLine());
+            for(int j = 0; j < 5; j++) {
+                board[i][j] = Integer.parseInt(st.nextToken());
+            }
         }
+        
         st = new StringTokenizer(br.readLine());
-        int R = Integer.parseInt(st.nextToken());
-        int C = Integer.parseInt(st.nextToken());
-        arr[R][C] = -1;
-        recur(R,C,0,0);
+        int sr = Integer.parseInt(st.nextToken());
+        int sc = Integer.parseInt(st.nextToken());
         
-        System.out.println(ans==Integer.MAX_VALUE?-1:ans);
+        visited[sr][sc] = true;
+        dfs(sr, sc, 0, 0);
         
-    }//end main
+        if(answer == Integer.MAX_VALUE) answer = -1;
+        System.out.println(answer);
+    }
     
-    static public void recur(int r, int c, int dis, int apple) {
-    	if(apple==3) {
-    		if(dis<ans) ans = dis;
-    		return;
-    	}
-    	for(int d=0; d<4; d++) {
-    		int nr = r+dirR[d];
-    		int nc = c+dirC[d];
-    		if(nr<0 || nr>=5 || nc<0 || nc>=5) continue;
-    		if(arr[nr][nc] == -1) continue;
-    		
-    		if(arr[nr][nc]==1) {
-    			arr[nr][nc] = -1;
-    			recur(nr, nc, dis+1, apple+1);
-    			arr[nr][nc] = 1;
-    		}
-    		else {
-    			arr[nr][nc] = -1;
-    			recur(nr, nc, dis+1, apple);
-    			arr[nr][nc] = 0;
-    		}
-    	}
-    	
+    static void dfs(int r, int c, int cnt, int idx) {
+        if(cnt >= 3) {
+            answer = Math.min(answer, idx);
+            return;
+        }
+        if(idx >= answer) return;
+        
+        for(int i = 0; i < 4; i++) {
+            int nr = r + dr[i];
+            int nc = c + dc[i];
+            
+            if(nr < 0 || nr >= 5 || nc < 0 || nc >= 5) continue;
+            if(board[nr][nc] == -1) continue;
+            if(visited[nr][nc]) continue;
+            
+            visited[nr][nc] = true;
+            int num = board[nr][nc];
+            
+            if(num == 1) {
+                board[nr][nc] = 0;
+                dfs(nr, nc, cnt+1, idx+1);
+                board[nr][nc] = 1;
+            } else {
+                dfs(nr, nc, cnt, idx+1);
+            }
+            
+            visited[nr][nc] = false;
+        }
     }
 }
