@@ -3,7 +3,7 @@ import java.util.*;
 
 class Main {
     static int N, K, answer;
-    static int[] characters;
+    static int[] words;
     
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -12,38 +12,36 @@ class Main {
         N = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
         
+        words = new int[N];
+        
+        for(int i = 0; i < N; i++) {
+            String str = br.readLine();
+            for(char ch : str.toCharArray()) {
+                int bit = 1 << (ch - 'a');
+                words[i] |= bit;
+            }
+        }
+        
         if(K < 5) {
             System.out.println(0);
             return;
         }
         
-        characters = new int[N];
-        
-        for(int i = 0; i < N; i++) {
-            String str = br.readLine();
-            for(char ch : str.toCharArray()) {
-                characters[i] |= (1 << (ch - 'a'));
-            }
-        }
-        
         int base = 0;
-        
         for(char ch : "antic".toCharArray()) {
-            base |= (1 << (ch - 'a'));
+            int bit = 1 << (ch - 'a');
+            base |= bit;
         }
         
-        answer = 0;
-        
-        dfs(0, 0, base);
-        
+        dfs(base, 5, 1);
         System.out.println(answer);
     }
     
-    public static void dfs(int idx, int num, int mask) {
-        if(num == K - 5) {
+    public static void dfs(int teach, int num, int idx) {
+        if(num == K) {
             int cnt = 0;
-            for(int i = 0; i < N; i++) {
-                if((characters[i] & mask) == characters[i]) cnt++;
+            for(int word : words) {
+                if((word & teach) == word) cnt++;
             }
             answer = Math.max(answer, cnt);
             return;
@@ -52,9 +50,8 @@ class Main {
         if(idx >= 26) return;
         
         for(int i = idx; i < 26; i++) {
-            if((mask & (1 << i)) != 0) continue;
-            dfs(i + 1, num + 1, mask | (1 << i));
+            if((teach & (1 << i)) != 0) continue;
+            dfs(teach | (1 << i), num + 1, i + 1);
         }
-        
     }
 }
