@@ -2,36 +2,40 @@ import java.util.*;
 
 class Solution {
     public int solution(int[][] info, int n, int m) {
-        int answer = Integer.MAX_VALUE;
+        int answer = Integer.MAX_VALUE / 2;
+        
         int l = info.length;
         
-        int[][] dp = new int[l+1][m];
-        for(int i = 0; i <= l; i++) Arrays.fill(dp[i], Integer.MAX_VALUE);
+        int[][] dp = new int[l + 1][m];
+        
+        for(int i = 0; i <= l; i++) {
+            Arrays.fill(dp[i], Integer.MAX_VALUE/2);
+        }
         
         dp[0][0] = 0;
         
-        for(int i = 0; i < l; i++) {
-            int num1 = info[i][0];
-            int num2 = info[i][1];
+        for(int i = 1; i <= l; i++) {
+            int a = info[i - 1][0];
+            int b = info[i - 1][1];
             
             for(int j = 0; j < m; j++) {
-                if(dp[i][j] == Integer.MAX_VALUE) continue;
-                
-                if(dp[i][j] + num1 < n) {
-                    dp[i+1][j] = Math.min(dp[i+1][j], dp[i][j] + num1);
+                if(dp[i-1][j] + a < n) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j] + a);
                 }
                 
-                if(j + num2 < m) {
-                    dp[i+1][j+num2] = Math.min(dp[i+1][j+num2], dp[i][j]);
+                if(j >= b) {
+                    dp[i][j] = Math.min(dp[i][j], dp[i - 1][j - b]);
                 }
             }
+            
         }
         
         for(int i = 0; i < m; i++) {
             answer = Math.min(answer, dp[l][i]);
         }
         
-        if(answer == Integer.MAX_VALUE) answer = -1;
+        answer = (answer == Integer.MAX_VALUE / 2) ? -1 : answer;
+        
         return answer;
     }
 }
