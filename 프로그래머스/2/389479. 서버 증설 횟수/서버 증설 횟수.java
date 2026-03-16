@@ -1,25 +1,23 @@
-import java.util.*;
-
 class Solution {
     public int solution(int[] players, int m, int k) {
         int answer = 0;
         
-        int l = players.length;
+        int[] server = new int[24];
         
-        int[] server = new int[l];
-        for(int i = 0; i < l; i++) {
-            int need = players[i]/ m;
-            if(need > server[i]) {
-                int end = Math.min(i + k, l);
-                int plus = need - server[i];
-                answer += plus;
-                
-                for(int j = i; j < end; j++) {
-                    server[j] += plus;
-                }
+        
+        for(int i = 0; i < 24; i++) {
+            int player = players[i];
+            if(server[i] * m >= player) continue;
+            
+            int need = player / m;
+            int add = need - server[i];
+            
+            answer += add;
+            for(int j = 0; j < k; j++) {
+                if(i + j >= 24) break;
+                server[i + j] += add;
             }
         }
-        
         return answer;
     }
 }
