@@ -10,15 +10,6 @@ class Solution {
         return a;
     }
     
-    public static int gcd(int[] arr) {
-        int result = arr[0];
-        for(int i = 1; i < arr.length; i++) {
-            result = gcd(result, arr[i]);
-            if(result == 1) break;
-        }
-        return result;
-    }
-    
     public static boolean check(int a, int[] arr) {
         for(int num : arr) {
             if(num % a == 0) {
@@ -30,8 +21,19 @@ class Solution {
     
     public int solution(int[] arrayA, int[] arrayB) {
         int answer = 0;
-        int gcdA = gcd(arrayA);
-        int gcdB = gcd(arrayB);
+        int gcdA = arrayA[0];
+        int gcdB = arrayB[0];
+        
+        for(int i = 1; i < arrayA.length; i++) {
+            gcdA = gcd(gcdA, arrayA[i]);
+            if(gcdA == 1) break;
+        }
+        
+        for(int i = 1; i < arrayB.length; i++) {
+            gcdB = gcd(gcdB, arrayB[i]);
+            if(gcdB == 1) break;
+        }
+        
         
         if(check(gcdA, arrayB)) {
             answer = Math.max(answer, gcdA);
@@ -39,6 +41,7 @@ class Solution {
         if(check(gcdB, arrayA)) {
             answer = Math.max(answer, gcdB);
         }
+        
         
         return answer;
     }
