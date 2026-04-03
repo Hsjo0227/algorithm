@@ -12,9 +12,7 @@ class Solution {
                 answer += torques[i * w];
                 torques[i * w]++;
             }
-        }
-        
-        for(int w : weights) {
+            
             answer -= 2 * count[w];
             count[w]++;
         }
