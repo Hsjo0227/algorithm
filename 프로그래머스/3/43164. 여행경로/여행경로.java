@@ -1,39 +1,46 @@
 import java.util.*;
 
 class Solution {
-    static int l;
-    static String[] answer;
-    static boolean[] used;
+    int n;
+    boolean[] visited;
+    String[] answer;
+    
     public String[] solution(String[][] tickets) {
+        n = tickets.length;
+        answer = new String[n+1];
         
-        l = tickets.length;
-        answer = new String[l+1];
-        used = new boolean[l];
+        Arrays.sort(tickets, (arr1, arr2) -> {
+            if(arr1[0].equals(arr2[0])) {
+                return arr1[1].compareTo(arr2[1]);
+            } else {
+                return arr1[0].compareTo(arr2[0]);
+            }
+        });
         
-        Arrays.sort(tickets, (arr1, arr2) -> arr1[1].compareTo(arr2[1]));
-        
+        visited = new boolean[n];
         answer[0] = "ICN";
-        
-        dfs(tickets, 1);
+        dfs(tickets, "ICN", 0);
         
         return answer;
     }
     
-    public boolean dfs(String[][] tickets, int idx) {
-        if(idx == l + 1) {
+    private boolean dfs(String[][] tickets, String cur, int cnt) {
+        if(cnt == n) {
             return true;
         }
         
-        for(int i = 0; i < l; i++) {
-            if(used[i]) continue;
-            String[] arr = tickets[i];
+        for(int i = 0; i < n; i++) {
+            String from = tickets[i][0];
+            String to = tickets[i][1];
             
-            if(!arr[0].equals(answer[idx-1])) continue;
-            used[i] = true;
-            answer[idx] = arr[1];
-            if(dfs(tickets, idx+1)) return true;
-            used[i] = false;
+            if(visited[i]) continue;
+            if(!from.equals(cur)) continue;
             
+            visited[i] = true;
+            answer[cnt+1] = to; 
+            if(dfs(tickets, to, cnt+1)) return true;
+            answer[cnt+1] = null;
+            visited[i] = false;
         }
         return false;
     }
