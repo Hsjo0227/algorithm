@@ -5,7 +5,6 @@ class Solution {
         long answer = (long) w * h;
         
         // y = h/w * x
-        // hy = wx
         
         long prev = 0;
         for(long x = 1; x <= w; x++) {
