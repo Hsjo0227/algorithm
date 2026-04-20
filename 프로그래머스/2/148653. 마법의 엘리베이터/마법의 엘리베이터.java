@@ -10,12 +10,12 @@ class Solution {
             
             if(num < 5) {
                 answer += num;
-            } else if(num > 5) {
-                answer += 10 - num;
-                storey++;
-            } else  {
+            } else if(num == 5) {
                 answer += 5;
                 if(storey % 10 >= 5) storey++;
+            } else {
+                answer += 10-num;
+                storey++;
             }
         }
         
