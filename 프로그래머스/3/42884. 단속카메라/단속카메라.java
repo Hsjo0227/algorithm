@@ -1,30 +1,29 @@
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.*;
+
 class Solution {
     public int solution(int[][] routes) {
         int answer = 0;
-        int key = -30001;
         
-        Arrays.sort(routes, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                if(o1[1] == o2[1]){
-                    return o1[0] - o2[0];
-                } else {
-                    return o1[1] - o2[1];
-                }
+        int camera = -30001;
+        
+        Arrays.sort(routes, (arr1, arr2) -> {
+            if(arr1[1] == arr2[1]) {
+                return Integer.compare(arr1[0], arr2[0]);
+            } else {
+                return Integer.compare(arr1[1], arr2[1]);
             }
-            
         });
-        int count = 0;
-        for (int i = 0; i < routes.length; i++) {
-            if(routes[i][0] > key) {
-                count++;
-                key = routes[i][1];
+        
+        for(int[] arr : routes) {
+            int start = arr[0];
+            int end = arr[1];
+            
+            if(start > camera) {
+                answer++;
+                camera = end;
             }
         }
         
-        
-        return count;
+        return answer;
     }
 }
