@@ -14,7 +14,10 @@ class Solution {
     }
     
     private void dfs(int n, int idx) {
-        if(idx == n) answer++;
+        if(idx == n) {
+            answer++;
+            return;
+        }
         
         for(int i = 0; i < n; i++) {
             if(check(n, idx, i)) {
