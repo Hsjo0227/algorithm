@@ -1,0 +1,24 @@
+-- 코드를 입력하세요
+WITH RANKING AS (
+    SELECT 
+        PRODUCT_ID, 
+        ROW_NUMBER() OVER (PARTITION BY CATEGORY ORDER BY PRICE DESC) AS RN
+    FROM 
+        FOOD_PRODUCT
+    WHERE
+        CATEGORY IN ('과자', '국', '김치', '식용유')
+)
+SELECT 
+    CATEGORY,
+    PRICE, 
+    PRODUCT_NAME
+FROM 
+    FOOD_PRODUCT P
+JOIN 
+    RANKING R
+ON 
+    P.PRODUCT_ID = R.PRODUCT_ID
+WHERE 
+    R.RN = 1
+ORDER BY 
+    PRICE DESC;
