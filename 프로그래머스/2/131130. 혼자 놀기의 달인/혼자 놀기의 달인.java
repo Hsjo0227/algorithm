@@ -2,35 +2,28 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] cards) {
-        int first = 0;
-        int second = 0;
+        int answer = 0;
+        int n = cards.length;
         
-        int[] counts = new int[cards.length];
-        boolean[] visited = new boolean[cards.length];
+        List<Integer> groups = new ArrayList<>();
+        boolean[] used = new boolean[n];
         
-        for(int i = 0; i < cards.length; i++) {
-            cards[i]--;
-        }
-        
-        for(int i = 0; i < cards.length; i++) {
-            if(visited[i]) continue;
+        for(int i = 0; i < n; i++) {
+            if(used[i]) continue;
             
-            int value = dfs(i, cards, visited);
-            
-            if(value > first) {
-                second = Math.max(second, first);
-                first = value;
-            } else {
-                second = Math.max(second, value);
+            int cnt = 0;
+            int num = cards[i] - 1;
+            while(!used[num]) {
+                used[num] = true;
+                cnt++;
+                num = cards[num] - 1;
             }
+            groups.add(cnt);
         }
         
-        return first * second;
-    }
-    
-    public int dfs(int num, int[] cards, boolean[] visited) {
-        if(visited[num]) return 0;
-        visited[num] = true;
-        return dfs(cards[num], cards, visited) + 1;
+        if(groups.size() == 1) return 0;
+        Collections.sort(groups, Comparator.reverseOrder());
+        
+        return groups.get(0) * groups.get(1);
     }
 }
