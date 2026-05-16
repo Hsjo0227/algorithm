@@ -4,25 +4,20 @@ class Solution {
     public int solution(int[][] routes) {
         int answer = 0;
         
-        int camera = -30001;
+        Arrays.sort(routes, (arr1, arr2) -> Integer.compare(arr1[1], arr2[1]));
         
-        Arrays.sort(routes, (arr1, arr2) -> {
-            if(arr1[1] == arr2[1]) {
-                return Integer.compare(arr1[0], arr2[0]);
-            } else {
-                return Integer.compare(arr1[1], arr2[1]);
-            }
-        });
+        int pos = Integer.MIN_VALUE;
         
-        for(int[] arr : routes) {
-            int start = arr[0];
-            int end = arr[1];
+        for(int[] route : routes) {
+            int start = route[0];
+            int end = route[1];
             
-            if(start > camera) {
+            if(start > pos) {
+                pos = end;
                 answer++;
-                camera = end;
             }
         }
+        
         
         return answer;
     }
