@@ -2,29 +2,35 @@ import java.util.*;
 
 class Solution {
     public int solution(int k, int[] tangerine) {
-        int answer = 0;
+        int answer = k;
+        
         Arrays.sort(tangerine);
         
-        List<Integer> numbers = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        
         int prev = tangerine[0];
         int cnt = 1;
         for(int i = 1; i < tangerine.length; i++) {
-            int now = tangerine[i];
-            if(now != prev) {
-                numbers.add(cnt);
-                prev = now;
-                cnt = 0;
+            int num = tangerine[i];
+            if(tangerine[i] == prev) {
+                cnt++;
+                continue;
+            } else {
+                list.add(cnt);
+                prev = tangerine[i];
+                cnt = 1;
             }
-            cnt++;
         }
-        numbers.add(cnt);
-        Collections.sort(numbers, Collections.reverseOrder());
+        list.add(cnt);
+        list.sort(Comparator.reverseOrder());
         
         int sum = 0;
-        for(int num : numbers) {
-            if(sum >= k) break;
-            sum += num;
-            answer++;
+        for(int i = 0; i < list.size(); i++) {
+            sum += list.get(i);
+            if(sum >= k) {
+                answer = i+1;
+                break;
+            }
         }
         
         return answer;
