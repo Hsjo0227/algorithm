@@ -4,16 +4,12 @@ class Solution {
     public int solution(int[][] routes) {
         int answer = 0;
         
+        int max = -Integer.MAX_VALUE;
         Arrays.sort(routes, (arr1, arr2) -> Integer.compare(arr1[1], arr2[1]));
         
-        int pos = Integer.MIN_VALUE;
-        
         for(int[] route : routes) {
-            int start = route[0];
-            int end = route[1];
-            
-            if(start > pos) {
-                pos = end;
+            if(route[0] > max) {
+                max = route[1];
                 answer++;
             }
         }
