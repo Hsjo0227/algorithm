@@ -1,40 +1,35 @@
 import java.util.*;
 
 class Solution {
+    static int[] answer;
+    static Map<String, Integer> map;
     public int[] solution(String[] enroll, String[] referral, String[] seller, int[] amount) {
-        int n = enroll.length;
-        int m = seller.length;
-        int[] answer = new int[n];
+        answer = new int[enroll.length];
+        map = new HashMap<>();
         
-        Map<String, String> map = new HashMap<>();
-        Map<String, Integer> idxs = new HashMap<>();
-        
-        for(int i = 0; i < n; i++) {
-            String child = enroll[i];
-            String parent = referral[i];
-            
-            idxs.put(child, i);
-            
-            if(parent.equals("-")) continue;
-            
-            map.put(child, parent);
+        for(int i = 0; i < enroll.length; i++) {
+            map.put(enroll[i], i);
         }
         
-        for(int i = 0; i < m; i++) {
-            String sellerName = seller[i];
-            int remain = amount[i] * 100;
-            
-            do {
-                int idx = idxs.get(sellerName);
-                
-                answer[idx] += remain - (remain / 10);
-                remain = remain / 10;
-                
-                sellerName = map.get(sellerName);
-                
-            } while(sellerName != null && remain != 0);
+        for(int i = 0; i < seller.length; i++) {
+            int people = map.get(seller[i]);
+            int money = amount[i] * 100;
+            calc(enroll, referral, people, money);
         }
         
         return answer;
+    }
+    
+    public static void calc(String[] enroll, String[] referral, int idx, int money) {
+        if(money == 0) return;
+        
+        answer[idx] += (int) Math.ceil(money * 0.9);
+        
+        if(referral[idx].equals("-")) return;
+        
+        int ref = map.get(referral[idx]);
+        calc(enroll, referral, ref, (int) Math.floor(money * 0.1));
+        
+        
     }
 }
