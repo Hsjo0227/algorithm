@@ -1,38 +1,40 @@
-import java.util.*;
-
 class Solution {
     public String solution(String video_len, String pos, String op_start, String op_end, String[] commands) {
         String answer = "";
         
-        int length = toInt(video_len);
-        int position = toInt(pos);
-        int start = toInt(op_start);
-        int end = toInt(op_end);
+        int lenInt = toInt(video_len);
+        int posInt = toInt(pos);
+        int startInt = toInt(op_start);
+        int endInt = toInt(op_end);
         
         for(String command : commands) {
-            if(start <= position && position <= end) position = end;
+            if(posInt >= startInt && posInt <= endInt) {
+                posInt = endInt;
+            }
             switch(command) {
-                case "prev":
-                    position = Math.max(0, position - 10);
-                    if(start <= position && position <= end) position = end;
-                    break;
                 case "next":
-                    position = Math.min(length, position + 10);
-                    if(start <= position && position <= end) position = end;
+                    posInt = Math.min(posInt + 10, lenInt);
                     break;
-
+                case "prev":
+                    posInt = Math.max(posInt - 10, 0);
+                    break;
             }
         }
-        answer = String.format("%02d:%02d", position / 60, position % 60);
+        if(posInt >= startInt && posInt <= endInt) {
+                posInt = endInt;
+        }
         
-        return answer;
+        return toStr(posInt);
     }
     
-    public static int toInt(String input) {
-        String[] arr = input.split(":");
-        int second = Integer.parseInt(arr[1]);
-        second += Integer.parseInt(arr[0]) * 60;
-        
-        return second;
+    private int toInt(String str) {
+        String[] arr = str.split(":");
+        return Integer.parseInt(arr[0]) * 60 + Integer.parseInt(arr[1]);
+    }
+    
+    private String toStr(int num) {
+        int min = num / 60;
+        int sec = num % 60;
+        return String.format("%02d:%02d", min, sec);
     }
 }
