@@ -1,52 +1,71 @@
-import java.util.*;
-
 class Solution {
-    static final int[] dr = {-1, 1, 0, 0};
-    static final int[] dc = {0, 0, -1, 1};
-    
-    static int[] position = new int[2];
-    static boolean[][] board;
-    
+    static final int[] dr = {0, 1, 0, -1};
+    static final int[] dc = {1, 0, -1, 0};
+
     public int[] solution(String[] park, String[] routes) {
-        
-        board = new boolean[park.length][park[0].length()];
-        
-        for(int i = 0; i < park.length; i++) {
-            for(int j = 0; j < park[0].length(); j++) {
-                char ch = park[i].charAt(j);
-                if(ch == 'S') position = new int[] {i, j};
-                if(ch != 'X') board[i][j] = true;
+        int H = park.length;
+        int W = park[0].length();
+
+        int[] pos = new int[2];
+        boolean[][] board = new boolean[H][W];
+
+        for (int i = 0; i < H; i++) {
+            String str = park[i];
+            for (int j = 0; j < W; j++) {
+                char ch = str.charAt(j);
+
+                switch (ch) {
+                    case 'S':
+                        pos[0] = i;
+                        pos[1] = j;
+                        break;
+                    case 'X':
+                        board[i][j] = true;
+                        break;
+                }
             }
         }
-        
-        for(String route : routes) {
-            char dir = route.charAt(0);
-            int len = route.charAt(2) - '0';
-            
-            int idx = -1;
-            if(dir == 'N') idx = 0;
-            else if(dir == 'S') idx = 1;
-            else if(dir == 'W') idx = 2;
-            else if(dir == 'E') idx = 3;
-            
-            if(!check(idx, len)) continue;
-            position[0] += len * dr[idx];
-            position[1] += len * dc[idx];
+
+        for (String route : routes) {
+            String[] parts = route.split(" ");
+            int dir = 0;
+            int distance = Integer.parseInt(parts[1]);
+
+            switch (parts[0]) {
+                case "E":
+                    dir = 0;
+                    break;
+                case "S":
+                    dir = 1;
+                    break;
+                case "W":
+                    dir = 2;
+                    break;
+                case "N":
+                    dir = 3;
+                    break;
+            }
+
+            int nr = pos[0];
+            int nc = pos[1];
+            boolean canMove = true;
+
+            for (int step = 0; step < distance; step++) {
+                nr += dr[dir];
+                nc += dc[dir];
+
+                if (nr < 0 || nr >= H || nc < 0 || nc >= W || board[nr][nc]) {
+                    canMove = false;
+                    break;
+                }
+            }
+
+            if (canMove) {
+                pos[0] = nr;
+                pos[1] = nc;
+            }
         }
-        
-        
-        return position;
-    }
-    public static boolean check(int idx, int len) {
-        
-        for(int i = 1; i <= len; i++) {
-            int nr = position[0] + (i * dr[idx]);
-            int nc = position[1] + (i * dc[idx]);
-            
-            if(nr < 0 || nr >= board.length || nc < 0 || nc >= board[0].length) return false;
-            
-            if(board[nr][nc] == false) return false;
-        }
-        return true;
+
+        return pos;
     }
 }
